@@ -1,0 +1,352 @@
+┌──(kali㉿kali)-[~]
+└─$ curl https://medirozahospital.com/robots.txt
+# robots.txt
+User-agent: *
+Disallow: /patient/
+Disallow: /staff/
+Disallow: /old/
+
+Sitemap: https://medirozahospital.com/sitemap.xml
+                                                                                 
+┌──(kali㉿kali)-[~]
+└─$ cd ~/Downloads
+                                                                                 
+┌──(kali㉿kali)-[~/Downloads]
+└─$ ls    
+hash1.txt                 My-Locked-PDF1-2.pdf  My-Locked-PDF3-1.pdf
+hash2.txt                 My-Locked-PDF1-3.pdf  My-Locked-PDF3.pdf
+hash3.txt                 My-Locked-PDF1.pdf    patient_report_1.pdf
+JTR_default_password.txt  My-Locked-PDF2-1.pdf  patient_report_2.pdf
+My-Locked-PDF1-1.pdf      My-Locked-PDF2.pdf    patient_report_3.pdf
+                                                                                 
+┌──(kali㉿kali)-[~/Downloads]
+└─$ qpdf --version
+Command 'qpdf' not found, but can be installed with:
+sudo apt install qpdf
+Do you want to install it? (N/y)y
+sudo apt install qpdf
+[sudo] password for kali: 
+Installing:                     
+  qpdf
+
+Suggested packages:
+  qpdf-doc
+
+Summary:
+  Upgrading: 0, Installing: 1, Removing: 0, Not Upgrading: 219
+  Download size: 163 kB
+  Space needed: 384 kB / 60.4 GB available
+
+Get:1 http://kali.download/kali kali-rolling/main amd64 qpdf amd64 12.4.1-1 [163 kB]
+Fetched 163 kB in 2s (86.1 kB/s)
+Selecting previously unselected package qpdf.
+(Reading database… 440064 files and directories currently installed.)
+Preparing to unpack …/qpdf_12.4.1-1_amd64.deb…
+Unpacking qpdf (12.4.1-1)…
+Setting up qpdf (12.4.1-1)…
+Processing triggers for man-db (2.13.1-1)…
+Processing triggers for kali-menu (2026.3.4)…
+                                                                                 
+┌──(kali㉿kali)-[~/Downloads]
+└─$ qpdf --password='!@#$%^&' --decrypt patient_report_3.pdf report3_open.pdf
+                                                                                 
+┌──(kali㉿kali)-[~/Downloads]
+└─$ ls
+hash1.txt                 My-Locked-PDF1-3.pdf  patient_report_1.pdf
+hash2.txt                 My-Locked-PDF1.pdf    patient_report_2.pdf
+hash3.txt                 My-Locked-PDF2-1.pdf  patient_report_3.pdf
+JTR_default_password.txt  My-Locked-PDF2.pdf    report3_open.pdf
+My-Locked-PDF1-1.pdf      My-Locked-PDF3-1.pdf
+My-Locked-PDF1-2.pdf      My-Locked-PDF3.pdf
+                                                                                 
+┌──(kali㉿kali)-[~/Downloads]
+└─$ exiftool report3_open.pdf
+ExifTool Version Number         : 13.55
+File Name                       : report3_open.pdf
+Directory                       : .
+File Size                       : 2.9 kB
+File Modification Date/Time     : 2026:10:03 08:53:42-04:00
+File Access Date/Time           : 2026:10:03 08:53:42-04:00
+File Inode Change Date/Time     : 2026:10:03 08:53:42-04:00
+File Permissions                : -rw-rw-r--
+File Type                       : PDF
+File Type Extension             : pdf
+MIME Type                       : application/pdf
+PDF Version                     : 1.4
+Linearized                      : No
+Author                          : j.malik
+Comments                        : DB backup moved to /old before site migration, do not delete
+Creator                         : Mediroza CMS 1.4.2
+Keywords                        : pathology, patient report
+Producer                        : Mediroza Lab Reporting Module
+Subject                         : Full Blood Count
+Title                           : Pathology Report - E. Thompson
+Page Count                      : 1
+                                                                                 
+┌──(kali㉿kali)-[~/Downloads]
+└─$ wget https://medirozahospital.com/old/mediroza_db_backup_2019.sql
+--2026-10-03 09:03:31--  https://medirozahospital.com/old/mediroza_db_backup_2019.sql
+Resolving medirozahospital.com (medirozahospital.com)... 199.188.201.16
+Connecting to medirozahospital.com (medirozahospital.com)|199.188.201.16|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 6346 (6.2K) [text/x-sql]
+Saving to: ‘mediroza_db_backup_2019.sql’
+
+mediroza_db_backup_2019.sql          100%[=====================================================================>]   6.20K  --.-KB/s    in 0s      
+
+2026-10-03 09:03:32 (137 MB/s) - ‘mediroza_db_backup_2019.sql’ saved [6346/6346]
+
+                                                                                                                                                   
+┌──(kali㉿kali)-[~/Downloads]
+└─$ ls
+hash1.txt                    My-Locked-PDF1-2.pdf  My-Locked-PDF3.pdf
+hash2.txt                    My-Locked-PDF1-3.pdf  patient_report_1.pdf
+hash3.txt                    My-Locked-PDF1.pdf    patient_report_2.pdf
+JTR_default_password.txt     My-Locked-PDF2-1.pdf  patient_report_3.pdf
+mediroza_db_backup_2019.sql  My-Locked-PDF2.pdf    report3_open.pdf
+My-Locked-PDF1-1.pdf         My-Locked-PDF3-1.pdf
+                                                                                 
+┌──(kali㉿kali)-[~/Downloads]
+└─$ grep -n "INSERT INTO" mediroza_db_backup_2019.sql
+32:INSERT INTO `staff` (`id`,`full_name`,`job_title`,`department`,`email`,`phone`,`national_id`,`monthly_salary_zar`,`date_joined`) VALUES
+79:INSERT INTO `shareholders` (`id`,`shareholder_name`,`share_percent`,`shares_held`,`share_class`) VALUES
+                                                                                 
+┌──(kali㉿kali)-[~/Downloads]
+└─$ sed -n '32,78p' mediroza_db_backup_2019.sql
+INSERT INTO `staff` (`id`,`full_name`,`job_title`,`department`,`email`,`phone`,`national_id`,`monthly_salary_zar`,`date_joined`) VALUES
+(1,'Dr. Rajesh Naidoo','Chief Pathologist','Diagnostics Lab','r.naidoo@medirozahospital.com','+27 82 101 2007','85021013011081',138000,'2009-03-16'),
+(2,'Sarah Botha','Chief Financial Officer','Finance','s.botha@medirozahospital.com','+27 82 102 2014','85031023022082',152000,'2011-07-01'),
+(3,'Dr. Johan van der Merwe','Medical Director','Management','j.merwe@medirozahospital.com','+27 82 103 2021','85041033033083',160000,'2007-01-22'),
+(4,'Dr. Anita Naicker','Consultant Cardiologist','Cardiology','a.naicker@medirozahospital.com','+27 82 104 2028','85051043044084',132000,'2012-09-10'),
+(5,'Dr. Ahmed Kara','Consultant Physician','Internal Medicine','a.kara@medirozahospital.com','+27 82 105 2035','85061053055085',128000,'2013-02-18'),
+(6,'Dr. Yusuf Cassim','Senior Registrar','Emergency & Trauma','y.cassim@medirozahospital.com','+27 82 106 2042','85071063066086',74000,'2018-05-04'),
+(7,'Michael Roberts','HR Director','Human Resources','m.roberts@medirozahospital.com','+27 82 107 2049','85081073077087',96000,'2010-11-15'),
+(8,'Susan Pretorius','HR Officer','Human Resources','s.pretorius@medirozahospital.com','+27 82 108 2056','85091083088088',32000,'2016-08-23'),
+(9,'Jameel Malik','IT Systems Administrator','IT','j.malik@medirozahospital.com','+27 82 109 2063','85101093099080',58000,'2015-04-12'),
+(10,'Thabo Molefe','Network Engineer','IT','t.molefe@medirozahospital.com','+27 82 110 2070','85111103110081',46000,'2017-10-02'),
+(11,'Nomvula Khumalo','Registered Nurse','Emergency & Trauma','n.khumalo@medirozahospital.com','+27 82 111 2077','85121113121082',34000,'2016-01-19'),
+(12,'Lerato Mokoena','Registered Nurse','Pediatrics','l.mokoena@medirozahospital.com','+27 82 112 2084','85011123132083',33000,'2017-06-07'),
+(13,'Bongani Ndlovu','Registered Nurse','Cardiology','b.ndlovu@medirozahospital.com','+27 82 113 2091','85021133143084',35000,'2015-12-01'),
+(14,'Zanele Mahlangu','Nursing Sister','Theatre','z.mahlangu@medirozahospital.com','+27 82 114 2098','85031143154085',42000,'2013-03-25'),
+(15,'Kagiso Sithole','Pharmacist','Pharmacy','k.sithole@medirozahospital.com','+27 82 115 2105','85041153165086',61000,'2014-09-08'),
+(16,'Naledi Zulu','Pharmacy Assistant','Pharmacy','n.zulu@medirozahospital.com','+27 82 116 2112','85051163176087',26000,'2019-02-14'),
+(17,'Themba Nkosi','Radiographer','Radiology','t.nkosi@medirozahospital.com','+27 82 117 2119','85061173187088',44000,'2016-07-30'),
+(18,'Palesa Radebe','Radiographer','Radiology','p.radebe@medirozahospital.com','+27 82 118 2126','85071183198080',43000,'2017-04-11'),
+(19,'Deepak Pillay','Lab Technologist','Diagnostics Lab','d.pillay@medirozahospital.com','+27 82 119 2133','85081193209081',41000,'2015-05-20'),
+(20,'Kavitha Govender','Lab Technician','Diagnostics Lab','k.govender@medirozahospital.com','+27 82 120 2140','85091203220082',35000,'2018-08-06'),
+(21,'Dr. Suresh Moodley','Consultant Radiologist','Radiology','s.moodley@medirozahospital.com','+27 82 121 2147','85101213231083',130000,'2012-02-28'),
+(22,'Dr. Fatima Patel','Pediatrician','Pediatrics','f.patel@medirozahospital.com','+27 82 122 2154','85111223242084',118000,'2013-10-17'),
+(23,'Nisha Singh','Physiotherapist','Rehabilitation','n.singh@medirozahospital.com','+27 82 123 2161','85121233253085',48000,'2016-11-09'),
+(24,'Dr. Vikram Chetty','Anaesthetist','Theatre','v.chetty@medirozahospital.com','+27 82 124 2168','85011243264086',135000,'2011-06-13'),
+(25,'David Smith','Facilities Manager','Operations','d.smith@medirozahospital.com','+27 82 125 2175','85021253275087',52000,'2014-01-27'),
+(26,'Karen O''Connor','Billing Administrator','Finance','k.oconnor@medirozahospital.com','+27 82 126 2182','85031263286088',29000,'2018-03-19'),
+(27,'James Wilson','Security Supervisor','Operations','j.wilson@medirozahospital.com','+27 82 127 2189','85041273297080',27000,'2019-09-02'),
+(28,'Linda Fourie','Receptionist','Front Office','l.fourie@medirozahospital.com','+27 82 128 2196','85051283308081',19000,'2020-02-10'),
+(29,'Peter van Wyk','Procurement Officer','Supply Chain','p.wyk@medirozahospital.com','+27 82 129 2203','85061293319082',38000,'2015-08-24'),
+(30,'Andile Mbeki','Ward Clerk','Administration','a.mbeki@medirozahospital.com','+27 82 130 2210','85071303330083',21000,'2019-11-05');
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shareholders`
+--
+DROP TABLE IF EXISTS `shareholders`;
+CREATE TABLE `shareholders` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `shareholder_name` varchar(120) NOT NULL,
+  `share_percent` decimal(5,2) NOT NULL,
+  `shares_held` int(11) NOT NULL,
+  `share_class` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+LOCK TABLES `shareholders` WRITE;
+                                                                                 
+┌──(kali㉿kali)-[~/Downloads]
+└─$ sed -n '79,$p' mediroza_db_backup_2019.sql
+INSERT INTO `shareholders` (`id`,`shareholder_name`,`share_percent`,`shares_held`,`share_class`) VALUES
+(1,'Dr. Rajesh Naidoo',18.0,180000,'Ordinary'),
+(2,'Cedar Health Holdings (Pty) Ltd',15.0,150000,'Ordinary'),
+(3,'Dr. Johan van der Merwe',12.0,120000,'Ordinary'),
+(4,'Reddy Family Trust',11.0,110000,'Ordinary'),
+(5,'Thabo Molefe',10.0,100000,'Ordinary'),
+(6,'Sarah Botha',9.0,90000,'Ordinary'),
+(7,'Dr. Ahmed Kara',8.0,80000,'Preferential'),
+(8,'Naledi Zulu',7.0,70000,'Ordinary'),
+(9,'Michael Roberts',6.0,60000,'Ordinary'),
+(10,'Dr. Vikram Chetty',4.0,40000,'Preferential');
+UNLOCK TABLES;
+
+SET FOREIGN_KEY_CHECKS = 1;
+-- End of backup
+                                                                                 
+┌──(kali㉿kali)-[~/Downloads]
+└─$ sed -n '32,78p' mediroza_db_backup_2019.sql
+INSERT INTO `staff` (`id`,`full_name`,`job_title`,`department`,`email`,`phone`,`national_id`,`monthly_salary_zar`,`date_joined`) VALUES
+(1,'Dr. Rajesh Naidoo','Chief Pathologist','Diagnostics Lab','r.naidoo@medirozahospital.com','+27 82 101 2007','85021013011081',138000,'2009-03-16'),
+(2,'Sarah Botha','Chief Financial Officer','Finance','s.botha@medirozahospital.com','+27 82 102 2014','85031023022082',152000,'2011-07-01'),
+(3,'Dr. Johan van der Merwe','Medical Director','Management','j.merwe@medirozahospital.com','+27 82 103 2021','85041033033083',160000,'2007-01-22'),
+(4,'Dr. Anita Naicker','Consultant Cardiologist','Cardiology','a.naicker@medirozahospital.com','+27 82 104 2028','85051043044084',132000,'2012-09-10'),
+(5,'Dr. Ahmed Kara','Consultant Physician','Internal Medicine','a.kara@medirozahospital.com','+27 82 105 2035','85061053055085',128000,'2013-02-18'),
+(6,'Dr. Yusuf Cassim','Senior Registrar','Emergency & Trauma','y.cassim@medirozahospital.com','+27 82 106 2042','85071063066086',74000,'2018-05-04'),
+(7,'Michael Roberts','HR Director','Human Resources','m.roberts@medirozahospital.com','+27 82 107 2049','85081073077087',96000,'2010-11-15'),
+(8,'Susan Pretorius','HR Officer','Human Resources','s.pretorius@medirozahospital.com','+27 82 108 2056','85091083088088',32000,'2016-08-23'),
+(9,'Jameel Malik','IT Systems Administrator','IT','j.malik@medirozahospital.com','+27 82 109 2063','85101093099080',58000,'2015-04-12'),
+(10,'Thabo Molefe','Network Engineer','IT','t.molefe@medirozahospital.com','+27 82 110 2070','85111103110081',46000,'2017-10-02'),
+(11,'Nomvula Khumalo','Registered Nurse','Emergency & Trauma','n.khumalo@medirozahospital.com','+27 82 111 2077','85121113121082',34000,'2016-01-19'),
+(12,'Lerato Mokoena','Registered Nurse','Pediatrics','l.mokoena@medirozahospital.com','+27 82 112 2084','85011123132083',33000,'2017-06-07'),
+(13,'Bongani Ndlovu','Registered Nurse','Cardiology','b.ndlovu@medirozahospital.com','+27 82 113 2091','85021133143084',35000,'2015-12-01'),
+(14,'Zanele Mahlangu','Nursing Sister','Theatre','z.mahlangu@medirozahospital.com','+27 82 114 2098','85031143154085',42000,'2013-03-25'),
+(15,'Kagiso Sithole','Pharmacist','Pharmacy','k.sithole@medirozahospital.com','+27 82 115 2105','85041153165086',61000,'2014-09-08'),
+(16,'Naledi Zulu','Pharmacy Assistant','Pharmacy','n.zulu@medirozahospital.com','+27 82 116 2112','85051163176087',26000,'2019-02-14'),
+(17,'Themba Nkosi','Radiographer','Radiology','t.nkosi@medirozahospital.com','+27 82 117 2119','85061173187088',44000,'2016-07-30'),
+(18,'Palesa Radebe','Radiographer','Radiology','p.radebe@medirozahospital.com','+27 82 118 2126','85071183198080',43000,'2017-04-11'),
+(19,'Deepak Pillay','Lab Technologist','Diagnostics Lab','d.pillay@medirozahospital.com','+27 82 119 2133','85081193209081',41000,'2015-05-20'),
+(20,'Kavitha Govender','Lab Technician','Diagnostics Lab','k.govender@medirozahospital.com','+27 82 120 2140','85091203220082',35000,'2018-08-06'),
+(21,'Dr. Suresh Moodley','Consultant Radiologist','Radiology','s.moodley@medirozahospital.com','+27 82 121 2147','85101213231083',130000,'2012-02-28'),
+(22,'Dr. Fatima Patel','Pediatrician','Pediatrics','f.patel@medirozahospital.com','+27 82 122 2154','85111223242084',118000,'2013-10-17'),
+(23,'Nisha Singh','Physiotherapist','Rehabilitation','n.singh@medirozahospital.com','+27 82 123 2161','85121233253085',48000,'2016-11-09'),
+(24,'Dr. Vikram Chetty','Anaesthetist','Theatre','v.chetty@medirozahospital.com','+27 82 124 2168','85011243264086',135000,'2011-06-13'),
+(25,'David Smith','Facilities Manager','Operations','d.smith@medirozahospital.com','+27 82 125 2175','85021253275087',52000,'2014-01-27'),
+(26,'Karen O''Connor','Billing Administrator','Finance','k.oconnor@medirozahospital.com','+27 82 126 2182','85031263286088',29000,'2018-03-19'),
+(27,'James Wilson','Security Supervisor','Operations','j.wilson@medirozahospital.com','+27 82 127 2189','85041273297080',27000,'2019-09-02'),
+(28,'Linda Fourie','Receptionist','Front Office','l.fourie@medirozahospital.com','+27 82 128 2196','85051283308081',19000,'2020-02-10'),
+(29,'Peter van Wyk','Procurement Officer','Supply Chain','p.wyk@medirozahospital.com','+27 82 129 2203','85061293319082',38000,'2015-08-24'),
+(30,'Andile Mbeki','Ward Clerk','Administration','a.mbeki@medirozahospital.com','+27 82 130 2210','85071303330083',21000,'2019-11-05');
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shareholders`
+--
+DROP TABLE IF EXISTS `shareholders`;
+CREATE TABLE `shareholders` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `shareholder_name` varchar(120) NOT NULL,
+  `share_percent` decimal(5,2) NOT NULL,
+  `shares_held` int(11) NOT NULL,
+  `share_class` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+LOCK TABLES `shareholders` WRITE;
+                                                                                 
+┌──(kali㉿kali)-[~/Downloads]
+└─$ grep "Naledi Zulu" mediroza_db_backup_2019.sql
+(16,'Naledi Zulu','Pharmacy Assistant','Pharmacy','n.zulu@medirozahospital.com','+27 82 116 2112','85051163176087',26000,'2019-02-14'),
+(8,'Naledi Zulu',7.0,70000,'Ordinary'),
+                                                                                 
+┌──(kali㉿kali)-[~/Downloads]
+└─$ ┌──(kali㉿kali)-[~]                        
+┌──(kali㉿kali)-[~]: command not found
+                                                                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$ └─$ curl https://medirozahospital.com/robots.txt
+└─$: command not found
+                                                                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$ # robots.txt
+                                                                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$ User-agent: *
+User-agent:: command not found
+                                                                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$ Disallow: /patient/
+Disallow:: command not found
+                                                                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$ Disallow: /staff/
+Disallow:: command not found
+                                                                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$ Disallow: /old/
+Disallow:: command not found
+                                                                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$ 
+                                                                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$ Sitemap: https://medirozahospital.com/sitemap.xml
+Sitemap:: command not found
+                                                                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$                                                                                  
+                                                                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$ ┌──(kali㉿kali)-[~]
+┌──(kali㉿kali)-[~]: command not found
+                                                                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$ └─$ cd ~/Downloads
+└─$: command not found
+                                                                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$                                                                                  
+                                                                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$ ┌──(kali㉿kali)-[~/Downloads]
+zsh: no such file or directory: ┌──(kali㉿kali)-[~/Downloads]
+                                                                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$ └─$ ls    
+└─$: command not found
+                                                                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$ hash1.txt                 My-Locked-PDF1-2.pdf  My-Locked-PDF3-1.pdf
+hash1.txt: command not found
+                                                                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$ hash2.txt                 My-Locked-PDF1-3.pdf  My-Locked-PDF3.pdf
+hash2.txt: command not found
+                                                                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$ hash3.txt                 My-Locked-PDF1.pdf    patient_report_1.pdf
+hash3.txt: command not found
+                                                                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$ JTR_default_password.txt  My-Locked-PDF2-1.pdf  patient_report_2.pdf
+JTR_default_password.txt: command not found
+                                                                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$ My-Locked-PDF1-1.pdf      My-Locked-PDF2.pdf    patient_report_3.pdf
+My-Locked-PDF1-1.pdf: command not found
+                                                                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$                                                                                  
+                                                                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$ ┌──(kali㉿kali)-[~/Downloads]
+zsh: no such file or directory: ┌──(kali㉿kali)-[~/Downloads]
+                                                                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$ └─$ qpdf --version
+└─$: command not found
+                                                                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$ Command 'qpdf' not found, but can be installed with:
+Command: command not found
+                                                                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$ sudo apt install qpdf
+[sudo] password for kali: 
+ Manager','Operations','d.smith@medirozahospital.com','+27 82 125 2175','85021253275087',52000,'2014-01-27'),
+(26,'Karen O''Connor','Billing Administrator','Finance','k.oconnor@medirozahospital.com','+27 82 126 2182','85031263286088',29000,'2018-03-19'),
+(27,'James Wilson','Security Supervisor','Operations','j.wilson@medirozahospital.com','+27 82 127 2189','85041273297080',27000,'2019-09-02'),
+(28,'Linda Fourie','Receptionist','Front Office','l.fourie@medirozahospital.com','+27 82 128 2196','85051283308081',19000,'2020-02-10'),
+(29,'Peter van Wyk','Procurement Officer','Supply Chain','p.wyk@medirozahospital.com','+27 82 129 2203','85061293319082',38000,'2015-08-24'),
+(30,'Andile Mbeki','Ward Clerk','Administration','a.mbeki@medirozahospital.com','+27 82 130 2210','85071303330083',21000,'2019-11-05');
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shareholders`
+--
+DROP TABLE IF EXISTS `shareholders`;
+CREATE TABLE `shareholders` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `shareholder_name` varchar(120) NOT NULL,
+  `share_percent` decimal(5,2) NOT NULL,
+  `shares_held` int(11) NOT NULL,
+  `share_class` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+LOCK TABLES `shareholders` WRITE;
